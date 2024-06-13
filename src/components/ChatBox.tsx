@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Button, Input, VStack, HStack, Text } from '@chakra-ui/react';
 import { FaPaperPlane } from 'react-icons/fa';
 
@@ -10,6 +10,22 @@ interface Message {
 const ChatBox: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState<string>('');
+
+  useEffect(() => {
+    // Fetch messages from Coze API
+    const fetchMessages = async () => {
+      try {
+        const response = await fetch('https://api.coze.cn/v1/messages');
+        const data = await response.json();
+        const apiMessages = data.map((msg: any) => ({ user: msg.user, text: msg.text }));
+        setMessages(apiMessages);
+      } catch (error) {
+        console.error('Error fetching messages:', error);
+      }
+    };
+
+    fetchMessages();
+  }, []);
 
   const handleSend = () => {
     if (input.trim()) {
